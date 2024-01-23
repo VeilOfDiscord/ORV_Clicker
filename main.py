@@ -22,6 +22,7 @@ pg.display.set_caption("Omniscient Clicker's Viewpoint")
 
 # set game constants
 GM = g.game(0.0, 50.0, 2.0, 0, 2.5)
+hp_bar = 300
 
 # framerate
 clock = pg.time.Clock()
@@ -30,6 +31,10 @@ FPS = 60
 # define shop area
 SHOP_HEIGHT = 300
 area = pg.Rect(0, HEIGHT-SHOP_HEIGHT, WIDTH, SHOP_HEIGHT)
+
+# font setup
+pg.font.init()
+myfont = pg.font.SysFont("Constantia", 30)
 
 class Square(pg.sprite.Sprite):
     def __init__(self, col, x, y):
@@ -40,7 +45,7 @@ class Square(pg.sprite.Sprite):
         self.rect.center = (x, y)
 
 # create sprites
-square = Square("crimson", WIDTH/2, 100)   
+square = Square("crimson", WIDTH/2, 115)   
 mc = Square("green", WIDTH/2, 230)
 squares = pg.sprite.Group()
 squares.add(square)
@@ -70,17 +75,6 @@ beauty = Square("yellow",(WIDTH/2)-80, (HEIGHT/4)+165)  # Hang Hayoung
 # lizard = Square("orange", (WIDTH/2)+80, (HEIGHT/4)+155) # Han Myugoh
 
 party_mem = [empress, insect, soldier, judge, tamer, admiral, beauty]
-# party.add(party_mem[0])
-# party.add(party_mem[1])
-# party.add(party_mem[2])
-# party.add(party_mem[3])
-# party.add(party_mem[4])
-# party.add(party_mem[5])
-# party.add(party_mem[6])
-
-
-
-
 
 
 # Our main loop that actually runs the game.
@@ -98,6 +92,8 @@ while True:
                     GM.dealDamage()
             if event.button == 3: # Right mouse button.
                 print('Right Clicked!')
+                party.add(party_mem[GM.npc])
+                GM.recruitCompanion()
 
     # check if enemy has been defeated or not
     if(GM.enemy_health <= 0.0):
@@ -110,10 +106,20 @@ while True:
 
     # update sprite group
     squares.update()
-    
+
+    #draw text
+    GM.updateStage(myfont,screen)
+
     # draw sprite group
     squares.draw(screen)
     party.draw(screen)
+
+    # pg.draw.rect(screen, (255,0,0), ((WIDTH/2)-25, 55, 50, 10)) # NEW
+
+    pg.draw.rect(screen, (255,0,0), ((WIDTH/2)-150, 65,hp_bar,15)) # NEW
+    pg.draw.rect(screen, (150,255,50), ((WIDTH/2)-150, 65,hp_bar-(GM.normalizedHP(hp_bar)),15)) # NEW
+
+
     # shop
     pg.draw.rect(screen, "grey", area)
 
